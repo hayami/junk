@@ -240,10 +240,10 @@ static void usage(FILE *out, int code)
 "    --separator str, -s str  use str as command separator (default is '%s')\n"
 "remarks:\n"
 "    Even though it is really confusing, if a separator is used immediately\n"
-"    befor the first command (cmd1), it must be strictly '%s' and not the one\n"
+"    befor the first command (cmd1), it must be strictly '--' and not the one\n"
 "    specified by the --separator or -s option. This limitation is due to the\n"
 "    getopt_long(3) function.\n",
-    prog, default_separator, default_separator);
+    prog, default_separator);
     exit(code);
 }
 
