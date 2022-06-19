@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     extern char *optarg;
     int i;
     char c;
-    const char *fmt = "Hello World %d";
+    const char *fmt = "Hello World #%d";
 
     pfout = stderr;
     pfprefix = "test";
@@ -53,21 +53,15 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    errorpf(-1, NULL);
-    errorpf(-1, fmt, 1);
     errorpf(0, NULL);
-    errorpf(0, fmt, 2);
+    errorpf(0, fmt, 1);
     errorpf(1, NULL);
-    errorpf(2, fmt, 3);
+    errorpf(2, fmt, 2);
 
-    verbosepf(-1, NULL);
-    verbosepf(-1, fmt, 4);
-    verbosepf(0, NULL);
-    verbosepf(0, fmt, 5);
-    verbosepf(3, NULL);
-    verbosepf(4, fmt, 6);
+    verbosepf(NULL);
+    verbosepf(fmt, 3);
 
-    exitpf(0, 5, fmt, 7);
+    exitpf(0, 5, fmt, 4);
 
     return 1;
 }
