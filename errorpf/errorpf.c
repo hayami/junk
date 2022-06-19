@@ -111,7 +111,7 @@ void errorpf(int errnum, const char *fmt, ...)
     va_end(ap);
 }
 
-void verbosepf(int errnum, const char *fmt, ...)
+void verbosepf(const char *fmt, ...)
 {
     va_list ap;
 
@@ -119,7 +119,7 @@ void verbosepf(int errnum, const char *fmt, ...)
         return;
 
     va_start(ap, fmt);
-    vpf(errnum, fmt, ap);
+    vpf(-1, fmt, ap);
     va_end(ap);
 }
 
