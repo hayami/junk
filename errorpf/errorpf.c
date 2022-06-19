@@ -31,7 +31,8 @@ static void vpf(int errnum, const char *fmt, va_list ap)
     const char *escseq_start;
     const char *escseq_stop;
 
-    /* errnum == 0 は (strerror(errnum) は使われないが) エラー扱いとする */
+    /* Even when the value of errnum is 0, it is treated as an error. But
+       strerror() will not be called and its return value is not used. */
     if (errnum >= 0) {
         priority = "ERROR: ";
         escseq_start = errorpf_escseq_start[pfescseq];
@@ -52,7 +53,8 @@ static void vpf(int errnum, const char *fmt, va_list ap)
 
     if (errnum <= 0) {
         if (STRLEN(str) <= 0) {
-            /* errnum <= 0 で str が NULL or "" ならば何も出力されない */
+            /* If the errnum is less than or equal to 0, and the
+               str is NULL or an empty string, nothing is output. */
         } else {
             fprintf(pfout, "%s%s:%s %s%s%s%s\n",
                     pfprefix_escseq_start[pfescseq],
