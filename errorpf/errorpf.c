@@ -12,6 +12,10 @@ const char *pfprefix = "(noname)";
 int pfescseq = 0;	/* none */
 int pfverbose = 0;
 
+/* By setting this pointer, you can refer to the exit code from inside
+   (for example) atexit() handler, when exit() is done inside exitpf(). */
+int *pfexit_code_storagep = NULL;
+
 #define CP const char *const
        CP pfescseqname          [] = { "none", "ansi",       "script",    0 };
 static CP pfprefix_escseq_start [] = { "", "\033[38;5;244m", "@PREFIX{",  0 };
@@ -101,6 +105,8 @@ void exitpf(int exitcode, int errnum, const char *fmt, ...)
     vpf(errnum, fmt, ap);
     va_end(ap);
 
+    if (pfexit_code_storagep)
+        *pfexit_code_storagep = exitcode;
     exit(exitcode);
 }
 
