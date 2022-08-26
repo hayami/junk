@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <errno.h>
-extern int errno;
 
 extern FILE *pfout;
 extern const char *pfprefix;
