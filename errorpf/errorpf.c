@@ -7,7 +7,7 @@
 #include <stdarg.h>
 #include <string.h>
 
-FILE *pfout = NULL;
+FILE *pfout = NULL;	/* see https://stackoverflow.com/questions/35596220 */
 const char *pfprefix = "(noname)";
 int pfescseq = 0;	/* none */
 int pfverbose = 0;
