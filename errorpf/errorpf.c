@@ -7,19 +7,20 @@
 #include <stdarg.h>
 #include <string.h>
 
-FILE *pfout = NULL;	/* see https://stackoverflow.com/questions/35596220 */
-const char *pfprefix = "(noname)";
-int pfescseq = 0;	/* none */
-int pfverbose = 0;
+/* see https://stackoverflow.com/questions/35596220 */
+FILE *errorpf_outfp = NULL;
+const char *errorpf_prefix = "(noname)";
+int errorpf_escseq = 0;		/* none     */
+int errorpf_verbose = 0;	/* disabled */
 
 #define CP const char *const
-       CP pfescseqname          [] = { "none", "ansi",       "script",    0 };
-static CP pfprefix_escseq_start [] = { "", "\033[38;5;244m", "@PREFIX{",  0 };
-static CP pfprefix_escseq_stop  [] = { "", "\033[0m",        "}PREFIX@",  0 };
-static CP errorpf_escseq_start  [] = { "", "\033[31;1m",     "@ERROR{",   0 };
-static CP errorpf_escseq_stop   [] = { "", "\033[0m",        "}ERROR@",   0 };
-static CP verbosepf_escseq_start[] = { "", "\033[32m",       "@VERBOSE{", 0 };
-static CP verbosepf_escseq_stop [] = { "", "\033[0m",        "}VERBOSE@", 0 };
+       CP errorpf_escseqname  [] = { "none", "ansi",       "script",    0 };
+static CP prefix_escseq_start [] = { "", "\033[38;5;244m", "@PREFIX{",  0 };
+static CP prefix_escseq_stop  [] = { "", "\033[0m",        "}PREFIX@",  0 };
+static CP error_escseq_start  [] = { "", "\033[31;1m",     "@ERROR{",   0 };
+static CP error_escseq_stop   [] = { "", "\033[0m",        "}ERROR@",   0 };
+static CP verbose_escseq_start[] = { "", "\033[32m",       "@VERBOSE{", 0 };
+static CP verbose_escseq_stop [] = { "", "\033[0m",        "}VERBOSE@", 0 };
 
 #define STRLEN(str)	((str) ? strlen((str)) : 0)
 #define UNUSED(expr)	(void)(expr)
@@ -35,15 +36,15 @@ static void vpf(int errnum, const char *fmt, va_list ap)
        strerror() will not be called and its return value is not used. */
     if (errnum >= 0) {
         priority = "ERROR: ";
-        escseq_start = errorpf_escseq_start[pfescseq];
-        escseq_stop = errorpf_escseq_stop[pfescseq];
+        escseq_start = error_escseq_start[errorpf_escseq];
+        escseq_stop = error_escseq_stop[errorpf_escseq];
     } else {
         priority = "";
-        escseq_start = verbosepf_escseq_start[pfescseq];
-        escseq_stop = verbosepf_escseq_stop[pfescseq];
+        escseq_start = verbose_escseq_start[errorpf_escseq];
+        escseq_stop = verbose_escseq_stop[errorpf_escseq];
     }
 
-    if (!pfout)
+    if (!errorpf_outfp)
         return;
 
     if (fmt) {
@@ -56,10 +57,10 @@ static void vpf(int errnum, const char *fmt, va_list ap)
             /* If the errnum is less than or equal to 0, and the
                str is NULL or an empty string, nothing is output. */
         } else {
-            fprintf(pfout, "%s%s:%s %s%s%s%s\n",
-                    pfprefix_escseq_start[pfescseq],
-                    pfprefix,
-                    pfprefix_escseq_stop[pfescseq],
+            fprintf(errorpf_outfp, "%s%s:%s %s%s%s%s\n",
+                    prefix_escseq_start[errorpf_escseq],
+                    errorpf_prefix,
+                    prefix_escseq_stop[errorpf_escseq],
                     escseq_start,
                     priority,
                     str,
@@ -67,19 +68,19 @@ static void vpf(int errnum, const char *fmt, va_list ap)
         }
     } else {
         if (STRLEN(str) <= 0) {
-            fprintf(pfout, "%s%s:%s %s%s%s%s\n",
-                    pfprefix_escseq_start[pfescseq],
-                    pfprefix,
-                    pfprefix_escseq_stop[pfescseq],
+            fprintf(errorpf_outfp, "%s%s:%s %s%s%s%s\n",
+                    prefix_escseq_start[errorpf_escseq],
+                    errorpf_prefix,
+                    prefix_escseq_stop[errorpf_escseq],
                     escseq_start,
                     priority,
                     strerror(errnum),
                     escseq_stop);
         } else {
-            fprintf(pfout, "%s%s:%s %s%s%s: %s%s\n",
-                    pfprefix_escseq_start[pfescseq],
-                    pfprefix,
-                    pfprefix_escseq_stop[pfescseq],
+            fprintf(errorpf_outfp, "%s%s:%s %s%s%s: %s%s\n",
+                    prefix_escseq_start[errorpf_escseq],
+                    errorpf_prefix,
+                    prefix_escseq_stop[errorpf_escseq],
                     escseq_start,
                     priority,
                     str, strerror(errnum),
@@ -90,7 +91,7 @@ static void vpf(int errnum, const char *fmt, va_list ap)
     if (str)
         free(str);
 
-    fflush(pfout);
+    fflush(errorpf_outfp);
 }
 
 void exitpf(int exitcode, int errnum, const char *fmt, ...)
@@ -117,7 +118,7 @@ void verbosepf(const char *fmt, ...)
 {
     va_list ap;
 
-    if (!pfverbose)
+    if (!errorpf_verbose)
         return;
 
     va_start(ap, fmt);
