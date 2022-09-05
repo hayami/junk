@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <errno.h>
 
-extern FILE *pfout;
-extern const char *pfprefix;
-extern int pfverbose;
-extern int pfescseq;
-extern const char *const pfescseqname[];
+extern FILE *errorpf_outfp;
+extern const char *errorpf_prefix;
+extern int errorpf_verbose;
+extern int errorpf_escseq;
+extern const char *const errorpf_escseqname[];
 
 void exitpf(int exitcode, int errnum, const char *fmt, ...);
 void errorpf(int errnum, const char *fmt, ...);
