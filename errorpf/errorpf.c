@@ -25,12 +25,20 @@ static CP verbose_escseq_stop [] = { "", "\033[0m",        "}VERBOSE@", 0 };
 #define STRLEN(str)	((str) ? strlen((str)) : 0)
 #define UNUSED(expr)	(void)(expr)
 
-static void vpf(int errnum, const char *fmt, va_list ap)
+static void vaspf(char **retstrp, int errnum, const char *fmt, va_list ap)
 {
-    char *str = NULL;
+    int ret = 0;
+    char *str;
+    char *line;
     const char *priority;
     const char *escseq_start;
     const char *escseq_stop;
+
+    if (errorpf_outfp == NULL && retstrp == NULL)
+        return;
+
+    if (retstrp)
+        *retstrp = NULL;
 
     /* Even when the value of errnum is 0, it is treated as an error. But
        strerror() will not be called and its return value is not used. */
@@ -44,20 +52,21 @@ static void vpf(int errnum, const char *fmt, va_list ap)
         escseq_stop = verbose_escseq_stop[errorpf_escseq];
     }
 
-    if (!errorpf_outfp)
-        return;
-
+    str = NULL;
     if (fmt) {
-        int ret = vasprintf(&str, fmt, ap);
-        UNUSED(ret);
+        ret = vasprintf(&str, fmt, ap);
+        if (ret < 0)
+            str = NULL;
     }
 
+    ret = 0;
+    line = NULL;
     if (errnum <= 0) {
         if (STRLEN(str) <= 0) {
             /* If the errnum is less than or equal to 0, and the
                str is NULL or an empty string, nothing is output. */
         } else {
-            fprintf(errorpf_outfp, "%s%s:%s %s%s%s%s\n",
+            ret = asprintf(&line, "%s%s:%s %s%s%s%s",
                     prefix_escseq_start[errorpf_escseq],
                     errorpf_prefix,
                     prefix_escseq_stop[errorpf_escseq],
@@ -68,7 +77,7 @@ static void vpf(int errnum, const char *fmt, va_list ap)
         }
     } else {
         if (STRLEN(str) <= 0) {
-            fprintf(errorpf_outfp, "%s%s:%s %s%s%s%s\n",
+            ret = asprintf(&line, "%s%s:%s %s%s%s%s",
                     prefix_escseq_start[errorpf_escseq],
                     errorpf_prefix,
                     prefix_escseq_stop[errorpf_escseq],
@@ -77,7 +86,7 @@ static void vpf(int errnum, const char *fmt, va_list ap)
                     strerror(errnum),
                     escseq_stop);
         } else {
-            fprintf(errorpf_outfp, "%s%s:%s %s%s%s: %s%s\n",
+            ret = asprintf(&line, "%s%s:%s %s%s%s: %s%s",
                     prefix_escseq_start[errorpf_escseq],
                     errorpf_prefix,
                     prefix_escseq_stop[errorpf_escseq],
@@ -87,11 +96,23 @@ static void vpf(int errnum, const char *fmt, va_list ap)
                     escseq_stop);
         }
     }
-
     if (str)
         free(str);
 
-    fflush(errorpf_outfp);
+    if (ret < 0)
+        line = NULL;
+
+    if (line) {
+        if (retstrp) {
+            *retstrp = line;
+        } else {
+            if (errorpf_outfp) {
+                fprintf(errorpf_outfp, "%s\n", line);
+                fflush(errorpf_outfp);
+            }
+            free(line);
+        }
+    }
 }
 
 void exitpf(int exitcode, int errnum, const char *fmt, ...)
@@ -99,7 +120,7 @@ void exitpf(int exitcode, int errnum, const char *fmt, ...)
     va_list ap;
 
     va_start(ap, fmt);
-    vpf(errnum, fmt, ap);
+    vaspf(NULL, errnum, fmt, ap);
     va_end(ap);
 
     exit(exitcode);
@@ -110,7 +131,16 @@ void errorpf(int errnum, const char *fmt, ...)
     va_list ap;
 
     va_start(ap, fmt);
-    vpf(errnum, fmt, ap);
+    vaspf(NULL, errnum, fmt, ap);
+    va_end(ap);
+}
+
+void aserrorpf(char **strp, int errnum, const char *fmt, ...)
+{
+    va_list ap;
+
+    va_start(ap, fmt);
+    vaspf(strp, errnum, fmt, ap);
     va_end(ap);
 }
 
@@ -122,7 +152,19 @@ void verbosepf(const char *fmt, ...)
         return;
 
     va_start(ap, fmt);
-    vpf(-1, fmt, ap);
+    vaspf(NULL, -1, fmt, ap);
+    va_end(ap);
+}
+
+void asverbosepf(char **strp, const char *fmt, ...)
+{
+    va_list ap;
+
+    if (!errorpf_verbose)
+        return;
+
+    va_start(ap, fmt);
+    vaspf(strp, -1, fmt, ap);
     va_end(ap);
 }
 
