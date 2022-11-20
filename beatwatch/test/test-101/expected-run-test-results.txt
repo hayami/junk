@@ -1,0 +1,7 @@
+exitcode: 9
+stdout: (empty)
+stderr: beatwatch (command-line): ERROR: fork(): Resource temporarily unavailable
+ctrl.log: (time) STDERR: beatwatch (command-line): ERROR: fork(): Resource temporarily unavailable
+ctrl.log: (time) EXIT=9
+fd3out.log: STDERR: beatwatch (command-line): ERROR: fork(): Resource temporarily unavailable
+fd3out.log: EXIT=9

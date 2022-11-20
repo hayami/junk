@@ -1,0 +1,23 @@
+exitcode: 0
+stdout: (empty)
+stderr: (empty)
+ctrl.log: (time) KILLPID=00101
+ctrl.log: (time) + KILLPID=00102
+ctrl.log: (time) + KILLPID=-00102
+ctrl.log: (time) + TIMEOUT=5
+ctrl.log: (time) TIMEOUT=10
+ctrl.log: (time) TESTPID=00102
+ctrl.log: (time) NOTICE: beatwatch (watchdog): monitoring-target has disconnected control channel
+ctrl.log: (time) NOTICE: beatwatch (watchdog): monitoring-target returned exit status 0
+ctrl.log: (time) EXIT=0
+fd3out.log: PASS: number of same PGID is 2 (shoud be 2)
+fd3out.log: PASS: number of same SID is 3 (should be 3)
+fd3out.log: PASS: PPID of beatwatch is 1 (should be 1)
+fd3out.log: PASS: PID of beatwatch is PPID of monitoring-target
+fd3out.log: PASS: PGID of beatwatch is not same as PGID of monitoring-target
+fd3out.log: PASS: SID of beatwatch is same as SID of monitoring-target
+fd3out.log: PASS: PPID of monitoring-target is same as PID of beatwach
+fd3out.log: PASS: PID of monitoring-target is not same as PID of beatwach
+fd3out.log: PASS: PGID of monitoring-target is not same as PGID of beatwatch
+fd3out.log: PASS: COMMAND name where PID == SID is 'beatwatch' (should be 'beatwatch')
+fd3out.log: PASS: COMMAND name where PID == PGID is '/bin/sh' (should be '/bin/sh')

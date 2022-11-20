@@ -1,0 +1,38 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index fe9f468..37ea764 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -85,7 +85,7 @@ endif()
+ 
+ add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+ target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIRS})
+-target_link_libraries(${PROJECT_NAME} ${LINK_LIBS})
++target_link_libraries(${PROJECT_NAME} ${LINK_LIBS} ${CMAKE_DL_LIBS})
+ target_compile_definitions(${PROJECT_NAME} PRIVATE TTYD_VERSION="${PROJECT_VERSION}")
+ 
+ include(GNUInstallDirs)
+diff --git a/src/protocol.c b/src/protocol.c
+index 4b832ab..d93af7b 100644
+--- a/src/protocol.c
++++ b/src/protocol.c
+@@ -240,12 +240,16 @@ int callback_tty(struct lws *wsi, enum lws_callback_reasons reason, void *user,
+         return 1;
+       }
+ 
+-      n = lws_hdr_copy(wsi, pss->path, sizeof(pss->path), WSI_TOKEN_GET_URI);
++      int m = lws_hdr_copy(wsi, pss->path, sizeof(pss->path), WSI_TOKEN_GET_URI);
+ #if defined(LWS_ROLE_H2)
+-      if (n <= 0) n = lws_hdr_copy(wsi, pss->path, sizeof(pss->path), WSI_TOKEN_HTTP_COLON_PATH);
++      if (m <= 0) m = lws_hdr_copy(wsi, pss->path, sizeof(pss->path), WSI_TOKEN_HTTP_COLON_PATH);
+ #endif
+-      if (strncmp(pss->path, endpoints.ws, n) != 0) {
+-        lwsl_warn("refuse to serve WS client for illegal ws path: %s\n", buf);
++      if (m < 0) {
++        lwsl_warn("refuse to serve WS client due to ws path is not available.\n");
++        return 1;
++      }
++      if (strncmp(pss->path, endpoints.ws, m) != 0) {
++        lwsl_warn("refuse to serve WS client for illegal ws path: %s\n", pss->path);
+         return 1;
+       }
+ 

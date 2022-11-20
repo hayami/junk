@@ -1,0 +1,108 @@
+diff --git a/src/protocol.c b/src/protocol.c
+index d93af7b..2833c40 100644
+--- a/src/protocol.c
++++ b/src/protocol.c
+@@ -12,6 +12,8 @@
+ #include "terminal.h"
+ #include "utils.h"
+ 
++static void input_timeout_handler(void);
++
+ // initial message list
+ static char initial_cmds[] = {SET_WINDOW_TITLE, SET_PREFERENCES};
+ 
+@@ -193,6 +195,8 @@ static int spawn_process(struct pss_tty *pss) {
+   }
+ 
+   lwsl_notice("started process, pid: %d\n", proc->pid);
++  dprintf(3, "TIMEOUT=30\n");
++  dprintf(3, "DETACH\n");
+ 
+   proc->pipe.data = pss;
+   uv_pipe_open(&proc->pipe, proc->pty);
+@@ -379,6 +383,8 @@ int callback_tty(struct lws *wsi, enum lws_callback_reasons reason, void *user,
+             lwsl_err("uv_write: %s (%s)\n", uv_err_name(err), uv_strerror(err));
+             return -1;
+           }
++
++          input_timeout_handler();
+           break;
+         case RESIZE_TERMINAL: {
+           int cols, rows;
+@@ -462,3 +468,63 @@ int callback_tty(struct lws *wsi, enum lws_callback_reasons reason, void *user,
+ 
+   return 0;
+ }
++
++
++#include <time.h>
++
++static int input_count = 0;
++
++static void *input_timeout_thread(void *arg) {
++  static int is_early = 1;
++  static int early_input_count = 0;
++
++  while (1) {
++
++    if (input_count > 0) {
++      if (is_early)
++        dprintf(3, "TIMEOUT=30\n");
++      else
++        dprintf(3, "TIMEOUT=900\n");
++    }
++
++    if (is_early) {
++      early_input_count += input_count;
++
++      if (early_input_count > 100)
++        is_early = 0;
++    }
++
++    input_count = 0;
++
++    const struct timespec req = { 10, 0 };
++    nanosleep(&req, NULL);
++  }
++}
++
++static void input_timeout_handler() {
++  static int is_thread_running = 0;
++
++  input_count++;
++
++  // Sending a TIMEOUT control message every time input comes in will
++  // be a high load. Watch the input for 10 seconds before sending it.
++  if (!is_thread_running) {
++    int ret;
++    pthread_t th;
++    pthread_attr_t attr;
++
++    ret = pthread_attr_init(&attr);
++    if (ret != 0)
++      return;
++
++    ret = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
++    if (ret != 0)
++      return;
++
++    ret = pthread_create(&th, &attr, input_timeout_thread, NULL);
++    if (ret != 0)
++      return;
++
++    is_thread_running = 1;
++  }
++}
+diff --git a/src/server.c b/src/server.c
+index 70b0864..a0f9831 100644
+--- a/src/server.c
++++ b/src/server.c
+@@ -574,6 +574,8 @@ int main(int argc, char **argv) {
+     open_uri(url);
+   }
+ 
++  dprintf(3, "PORT=%d\n", port);
++
+ #if LWS_LIBRARY_VERSION_MAJOR >= 3
+   int sig_nums[] = {SIGINT, SIGTERM};
+   int ns = sizeof(sig_nums) / sizeof(sig_nums[0]);

@@ -1,0 +1,18 @@
+exitcode: 0
+stdout: (empty)
+stderr: (empty)
+ctrl.log: (time) KILLPID=00101
+ctrl.log: (time) + KILLPID=00102
+ctrl.log: (time) + KILLPID=-00102
+ctrl.log: (time) + TIMEOUT=5
+ctrl.log: (time) TIMEOUT=10
+ctrl.log: (time) + BYE
+ctrl.log: (time) EXIT=0
+fd3out.log: % KILLPID=00101
+fd3out.log: + KILLPID=00102
+fd3out.log: + KILLPID=-00102
+fd3out.log: + TIMEOUT=5
+fd3out.log: % TIMEOUT=10
+fd3out.log: + BYE
+fd3out.log: % EXIT=0
+fd3out.log: NOTICE: beatwatch (command-line): watchdog has disconnected control channel

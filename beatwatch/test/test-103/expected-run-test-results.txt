@@ -1,0 +1,7 @@
+exitcode: 9
+stdout: (empty)
+stderr: beatwatch (command-line): ERROR: pipe(): Too many open files
+ctrl.log: (time) STDERR: beatwatch (command-line): ERROR: pipe(): Too many open files
+ctrl.log: (time) EXIT=9
+fd3out.log: STDERR: beatwatch (command-line): ERROR: pipe(): Too many open files
+fd3out.log: EXIT=9

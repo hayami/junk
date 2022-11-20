@@ -1,0 +1,24 @@
+exitcode: 143
+stdout: (empty)
+stderr: beatwatch (watchdog): timed out, PID=-00102 will now be terminated
+ctrl.log: (time) KILLPID=00101
+ctrl.log: (time) + KILLPID=00102
+ctrl.log: (time) + KILLPID=-00102
+ctrl.log: (time) + TIMEOUT=5
+ctrl.log: (time) TIMEOUT=10
+ctrl.log: (time) STDERR: beatwatch (watchdog): timed out, PID=-00102 will now be terminated
+ctrl.log: (time) NOTICE: beatwatch (watchdog): sending SIGTERM to PID=-00102
+ctrl.log: (time) NOTICE: beatwatch (watchdog): monitoring-target has disconnected control channel
+ctrl.log: (time) NOTICE: beatwatch (watchdog): monitoring-target got a signal 15
+ctrl.log: (time) EXIT=143
+fd3out.log: % KILLPID=00101
+fd3out.log: + KILLPID=00102
+fd3out.log: + KILLPID=-00102
+fd3out.log: + TIMEOUT=5
+fd3out.log: % TIMEOUT=10
+fd3out.log: STDERR: beatwatch (watchdog): timed out, PID=-00102 will now be terminated
+fd3out.log: NOTICE: beatwatch (watchdog): sending SIGTERM to PID=-00102
+fd3out.log: NOTICE: beatwatch (watchdog): monitoring-target has disconnected control channel
+fd3out.log: NOTICE: beatwatch (watchdog): monitoring-target got a signal 15
+fd3out.log: % EXIT=143
+fd3out.log: NOTICE: beatwatch (command-line): watchdog has disconnected control channel

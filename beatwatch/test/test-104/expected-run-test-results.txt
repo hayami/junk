@@ -1,0 +1,10 @@
+exitcode: 9
+stdout: (empty)
+stderr: beatwatch (watchdog): ERROR: pipe(): Too many open files
+ctrl.log: (time) KILLPID=00101
+ctrl.log: (time) STDERR: beatwatch (watchdog): ERROR: pipe(): Too many open files
+ctrl.log: (time) EXIT=9
+fd3out.log: % KILLPID=00101
+fd3out.log: STDERR: beatwatch (watchdog): ERROR: pipe(): Too many open files
+fd3out.log: % EXIT=9
+fd3out.log: NOTICE: beatwatch (command-line): watchdog has disconnected control channel

@@ -1,0 +1,50 @@
+psmatch() {
+    match="$1"		# match pattern of ps item
+    val="$2"		# match value of ps item
+    retmatch="$3"	# output item pattern (optional)
+    match_pos=
+    retmatch_pos=
+    ps -jx | while read psline; do
+        if [ -z "$match_pos" ]; then
+            # first line (header line)
+
+            match_pos=0
+            for x in $psline; do
+                case "$x" in
+                "$match"*) break ;;
+                esac
+                match_pos=$(($match_pos + 1))
+            done
+            #echo $psline
+
+            if [ -n "$retmatch" ]; then
+                retmatch_pos=0
+                for x in $psline; do
+                    case "$x" in
+                    "$retmatch"*) break ;;
+                    esac
+                    retmatch_pos=$(($retmatch_pos + 1))
+                done
+            fi
+        else
+            # second line or later
+            i=0
+            for x in $psline; do
+                [ $i -ne $match_pos ] || break
+                i=$(($i + 1))
+            done
+            if [ "$val" = "$x" ]; then
+                if [ -z "$retmatch" ]; then
+                   echo $psline 
+                else
+                    i=0
+                    for x in $psline; do
+                        [ $i -ne $retmatch_pos ] || break
+                        i=$(($i + 1))
+                    done
+                    echo $x 
+                fi
+            fi
+        fi
+    done
+}

@@ -1,0 +1,6 @@
+/beatwatch
+/*.o
+/obj/
+/obj-*/
+/test/tmp
+/test/test-*/preload.so

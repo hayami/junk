@@ -1,0 +1,19 @@
+exitcode: 0
+stdout: (empty)
+stderr: (empty)
+ctrl.log: (time) KILLPID=00101
+ctrl.log: (time) + KILLPID=00102
+ctrl.log: (time) + KILLPID=-00102
+ctrl.log: (time) + TIMEOUT=5
+ctrl.log: (time) TIMEOUT=10
+ctrl.log: (time) DETACH
+ctrl.log: (time) This control message must be receiced.
+ctrl.log: (time) NOTICE: beatwatch (watchdog): monitoring-target has disconnected control channel
+ctrl.log: (time) NOTICE: beatwatch (watchdog): monitoring-target returned exit status 0
+fd3out.log: % KILLPID=00101
+fd3out.log: + KILLPID=00102
+fd3out.log: + KILLPID=-00102
+fd3out.log: + TIMEOUT=5
+fd3out.log: % TIMEOUT=10
+fd3out.log: % DETACH
+fd3out.log: EXIT=0

@@ -1,0 +1,12 @@
+exitcode: 9
+stdout: (empty)
+stderr: beatwatch (monitoring-target): ERROR: setpgid(): Operation not permitted
+ctrl.log: (time) KILLPID=00101
+ctrl.log: (time) NOTICE: beatwatch (watchdog): execfunc has disconnected control channel
+ctrl.log: (time) NOTICE: beatwatch (watchdog): monitoring-target returned exit status 9
+ctrl.log: (time) EXIT=9
+fd3out.log: % KILLPID=00101
+fd3out.log: NOTICE: beatwatch (watchdog): execfunc has disconnected control channel
+fd3out.log: NOTICE: beatwatch (watchdog): monitoring-target returned exit status 9
+fd3out.log: % EXIT=9
+fd3out.log: NOTICE: beatwatch (command-line): watchdog has disconnected control channel

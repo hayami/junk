@@ -1,0 +1,8 @@
+exitcode: 9
+stdout: (empty)
+stderr: beatwatch (transient-watchdog): ERROR: daemon(): Resource temporarily unavailable
+stderr: beatwatch (command-line): ERROR: transient-watchdog exited with non-zero exit code 9
+ctrl.log: (time) STDERR: beatwatch (transient-watchdog): ERROR: daemon(): Resource temporarily unavailable
+ctrl.log: (time) EXIT=9
+fd3out.log: STDERR: beatwatch (command-line): ERROR: transient-watchdog exited with non-zero exit code 9
+fd3out.log: EXIT=9
